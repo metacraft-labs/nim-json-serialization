@@ -576,10 +576,12 @@ proc readValue*[T](r: var JsonReader, value: var T)
         if r.lexer.lazyTok != tkString:
           break
         # Calculate/assemble handler
+        var fieldName = ""
         when T is tuple:
           var reader = fields[][expectedFieldPos].reader
           expectedFieldPos += 1
         else:
+          fieldName = $r.lexer.strVal
           var reader = findFieldReader(fields[], r.lexer.strVal, expectedFieldPos)
         if reader != nil:
           r.lexer.next()
@@ -593,7 +595,8 @@ proc readValue*[T](r: var JsonReader, value: var T)
             r.skipSingleJsValue()
           else:
             const typeName = typetraits.name(T)
-            r.raiseUnexpectedField(r.lexer.strVal, cstring typeName)
+            # echo "[", fieldName, " ", typeName, "]"
+            r.raiseUnexpectedField(fieldName, cstring typeName)
         if r.lexer.lazyTok == tkComma:
           r.lexer.next()
         else:
