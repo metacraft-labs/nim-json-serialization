@@ -1,5 +1,5 @@
 import
-  std/[json, typetraits],
+  std/[json, typetraits, strutils],
   faststreams/[outputs, textio], serialization,
   "."/[format, types]
 
@@ -204,7 +204,9 @@ proc writeValue*(w: var JsonWriter, value: auto) =
         # TODO: Should this really use a decimal representation?
         # Or perhaps $ord(c) returns hex?
         # This is potentially a bug in Nim's json module.
-        append $ord(c)
+        
+        # EDIT: (codetracer): using toHex here
+        append toHex(ord(c), 2)
       of '\\': addPrefixSlash '\\'
       else: append c
 
